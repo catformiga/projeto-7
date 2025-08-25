@@ -52,26 +52,20 @@ export default function App() {
   }, [tasks]);
 
   // ======== EDIÇÃO COM ALERTA/CONFIRMAÇÃO ========
-  async function updateTaskTitle(id: string, title: string) {
-    const next = title.trim();
-    if (!next) {
-      window.alert("Digite um título antes de salvar a edição.");
-      return;
-    }
-    const current = tasks.find((t) => t.id === id);
-    if (!current) return;
-    if (current.title === next) return; // nada mudou
-
-    const ok = await confirmAction(
-      "Salvar edição?",
-      `Deseja alterar o título de:\n\n“${current.title}”\n\npara\n\n“${next}”?`
-    );
-    if (!ok) return;
-
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, title: next } : t))
-    );
+// ======== EDIÇÃO SEM CONFIRMAÇÃO NO PAI ========
+async function updateTaskTitle(id: string, title: string) {
+  const next = title.trim();
+  if (!next) {
+    await niceAlert("Campo vazio", "Digite um título antes de salvar.", { variant: "warning" });
+    return;
   }
+  const current = tasks.find((t) => t.id === id);
+  if (!current) return;
+  if (current.title === next) return; // nada mudou
+
+  // 🚫 sem confirmAction aqui
+  setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, title: next } : t)));
+}
   // ===============================================
 
   const filteredTasks = useMemo(() => {
